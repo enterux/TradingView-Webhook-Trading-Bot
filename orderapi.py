@@ -2,6 +2,7 @@ import logbot
 import json, os, config
 from ftxapi import Ftx
 from bybitapi import ByBit
+from binanceapi import BinanceFutures
 
 subaccount_name = 'SUBACCOUNT_NAME'
 leverage = 1.0
@@ -44,8 +45,30 @@ def global_var(payload):
 
         api_secret = os.environ.get('API_SECRET_MYBYBITACCOUNT', config.API_SECRET_MYBYBITACCOUNT)
 
+    elif subaccount_name == 'BINANCE':
+        leverage = os.environ.get('LEVERAGE_BINANCE', config.LEVERAGE_BINANCE)
+        leverage = float(leverage)
+
+        risk = os.environ.get('RISK_BINANCE', config.RISK_BINANCE)
+        risk = float(risk) / 100
+
+        api_key = os.environ.get('BINANCE_API_KEY', config.BINANCE_API_KEY)
+
+        api_secret = os.environ.get('BINANCE_API_SECRET', config.BINANCE_API_SECRET)
+
+    elif subaccount_name == 'BINANCE_TESTNET':
+        leverage = os.environ.get('LEVERAGE_BINANCE_TESTNET', config.LEVERAGE_BINANCE_TESTNET)
+        leverage = float(leverage)
+
+        risk = os.environ.get('RISK_BINANCE_TESTNET', config.RISK_BINANCE_TESTNET)
+        risk = float(risk) / 100
+
+        api_key = os.environ.get('BINANCE_TESTNET_API_KEY', config.BINANCE_TESTNET_API_KEY)
+
+        api_secret = os.environ.get('BINANCE_TESTNET_API_SECRET', config.BINANCE_TESTNET_API_SECRET)
+
     else:
-        logbot.logs(">>> /!\ Subaccount name not found", True)
+        logbot.logs(">>> Subaccount name not found", True)
         return {
             "success": False,
             "error": "subaccount name not found"
@@ -81,17 +104,21 @@ def order(payload: dict):
             exchange_api = Ftx(init_var)
         elif exchange.upper() == 'BYBIT':
             exchange_api = ByBit(init_var)
+        elif exchange.upper() == 'BINANCE':
+            exchange_api = BinanceFutures(init_var)
+        elif exchange.upper() == 'BINANCE_TESTNET':
+            exchange_api = BinanceFutures(init_var, testnet=True)
     except Exception as e:
-        logbot.logs('>>> /!\ An exception occured : {}'.format(e), True)
+        logbot.logs('>>> An exception occurred: {}'.format(e), True)
         return {
             "success": False,
             "error": str(e)
         }
 
-    logbot.logs('>>> Exchange : {}'.format(exchange))
-    logbot.logs('>>> Subaccount : {}'.format(subaccount_name))
+    logbot.logs('>>> Exchange: {}'.format(exchange))
+    logbot.logs('>>> Subaccount: {}'.format(subaccount_name))
 
-    #   FIND THE APPROPRIATE TICKER IN DICTIONNARY
+    #   FIND THE APPROPRIATE TICKER IN DICTIONARY
     ticker = ""
     if exchange.upper() == 'BYBIT':
         ticker = payload['ticker']
@@ -101,7 +128,7 @@ def order(payload: dict):
             try:
                 ticker = tickers[exchange.lower()][payload['ticker']]
             except Exception as e:
-                logbot.logs('>>> /!\ An exception occured : {}'.format(e), True)
+                logbot.logs('>>> An exception occurred: {}'.format(e), True)
                 return {
                     "success": False,
                     "error": str(e)
@@ -110,23 +137,23 @@ def order(payload: dict):
 
     #   ALERT MESSAGE CONDITIONS
     if payload['message'] == 'entry':
-        logbot.logs(">>> Order message : 'entry'")
+        logbot.logs(">>> Order message: 'entry'")
         exchange_api.exit_position(ticker)
         orders = exchange_api.entry_position(payload, ticker)
         return orders
 
     elif payload['message'] == 'exit':
-        logbot.logs(">>> Order message : 'exit'")
+        logbot.logs(">>> Order message: 'exit'")
         exit_res = exchange_api.exit_position(ticker)
         return exit_res
 
     elif payload['message'][-9:] == 'breakeven':
-        logbot.logs(">>> Order message : 'breakeven'")
+        logbot.logs(">>> Order message: 'breakeven'")
         breakeven_res = exchange_api.breakeven(payload, ticker)
         return breakeven_res
     
     else:
-        logbot.logs(f">>> Order message : '{payload['message']}'")
+        logbot.logs(f">>> Order message: '{payload['message']}'")
 
     return {
         "message": payload['message']

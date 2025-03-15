@@ -4,5 +4,17 @@
         "ETHPERP": "ETH-PERP",
         "FTTPERP": "FTT-PERP",
         "BNBPERP": "BNB-PERP"
+    },
+    "bybit": {
+        "BTCUSDT": "BTCUSDT",
+        "ETHUSDT": "ETHUSDT",
+        "BNBUSDT": "BNBUSDT",
+        "XRPUSDT": "XRPUSDT"
+    },
+    "binance": {
+        "BTCUSDT": "BTCUSDT",
+        "ETHUSDT": "ETHUSDT",
+        "BNBUSDT": "BNBUSDT",
+        "XRPUSDT": "XRPUSDT"
     }
 }

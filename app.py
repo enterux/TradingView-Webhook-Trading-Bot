@@ -19,14 +19,14 @@ def tradingview_webhook():
     webhook_passphrase = os.environ.get('WEBHOOK_PASSPHRASE', config.WEBHOOK_PASSPHRASE)
 
     if 'passphrase' not in data.keys():
-        logbot.logs(">>> /!\ No passphrase entered", True)
+        logbot.logs(">>> No passphrase entered", True)
         return {
             "success": False,
             "message": "no passphrase entered"
         }
 
     if data['passphrase'] != webhook_passphrase:
-        logbot.logs(">>> /!\ Invalid passphrase", True)
+        logbot.logs(">>> Invalid passphrase", True)
         return {
             "success": False,
             "message": "invalid passphrase"
@@ -46,14 +46,14 @@ def discord_study_tv():
     webhook_passphrase = os.environ.get('WEBHOOK_PASSPHRASE', config.WEBHOOK_PASSPHRASE)
 
     if 'passphrase' not in data.keys():
-        logbot.logs(">>> /!\ No passphrase entered", True)
+        logbot.logs(">>> No passphrase entered", True)
         return {
             "success": False,
             "message": "no passphrase entered"
         }
 
     if data['passphrase'] != webhook_passphrase:
-        logbot.logs(">>> /!\ Invalid passphrase", True)
+        logbot.logs(">>> Invalid passphrase", True)
         return {
             "success": False,
             "message": "invalid passphrase"
@@ -64,7 +64,7 @@ def discord_study_tv():
         chart_url = data["chart_url"]
         del data["chart_url"]
     except KeyError:
-        logbot.logs(">>> /!\ Key 'chart_url' not found", True)
+        logbot.logs(">>> Key 'chart_url' not found", True)
 
     logbot.study_alert(json.dumps(data), chart_url)
 
